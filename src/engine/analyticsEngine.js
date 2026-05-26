@@ -27,8 +27,8 @@ function cleanFilters_(filters) {
 function applyFiltersToEnriched_(enrichedRows, filters) {
   const f = cleanFilters_(filters);
   return (enrichedRows || []).filter(function(row) {
-    if (f.clientId && row.client_id !== f.clientId) return false;
-    if (f.recordId && row.id !== f.recordId) return false;
+    if (f.clientId && String(row.client_id) !== String(f.clientId)) return false;
+    if (f.recordId && String(row.id) !== String(f.recordId)) return false;
     if (f.agent && row.AgentName !== f.agent) return false;
     if (f.callType && row.callType !== f.callType) return false;
     if (f.journeyStage && row.journeyStage !== f.journeyStage) return false;
@@ -95,6 +95,7 @@ function drilldownTitle_(dimension, value) {
 function enrich_(raw) {
   const row = Object.assign({}, raw);
   row.id = String(row.id || '').trim();
+  row.client_id = String(row.client_id || '').trim();
   row.callType = value_(row.ConsumptionType);
   row.journeyStage = value_(row.AgeofConsumption);
   row.pitchStrength = value_(row.UpsellingEfforts);
