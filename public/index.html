@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
-  <script src="https://www.gstatic.com/charts/loader.js"></script>
+  <script src="https://www.gstatic.com/charts/loader.js" onerror="window._chartsLoadFailed=true"></script>
   <style>
     :root{
       --bg:#f4f7fc; --surface:#ffffff; --surface2:#f8fbff; --ink:#111d32; --muted:#63748c;
@@ -339,7 +339,12 @@
 <div id="drawerRoot" class="hidden"></div>
 
 <script>
-google.charts.load('current',{packages:['corechart','bar']});
+if(typeof google !== 'undefined' && google.charts) {
+  google.charts.load('current',{packages:['corechart','bar']});
+} else {
+  window.google = window.google || {};
+  google.charts = google.charts || { load: function(){}, setOnLoadCallback: function(fn){ window.addEventListener('load', fn); } };
+}
 
 /* Node/Express API bridge: preserves the original google.script.run UI calls. */
 const FINNABLE_API = {
