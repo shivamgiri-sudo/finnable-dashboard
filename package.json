@@ -1,0 +1,25 @@
+{
+  "name": "finnable-intelligence-node-mysql-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Finnable Sales & Quality Intelligence Command Center - Node/Express/MySQL pooled backend with preserved dashboard UI.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test:sql": "node scripts/test-sql.js",
+    "check": "node --check src/server.js && node --check src/services/dashboardService.js && node --check src/engine/analyticsEngine.js && node --check src/routes/api.js"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "compression": "^1.8.1",
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.14.3"
+  }
+}
