@@ -264,6 +264,16 @@
       border: 1px solid var(--border);
     }
 
+    /* TREND CONTROLS */
+    .trend-controls{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 16px}
+    .preset-btns{display:flex;gap:6px}
+    .preset-btn{height:32px;padding:0 14px;border:1px solid var(--border);background:transparent;color:var(--muted);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+    .preset-btn:hover{border-color:var(--primary);color:var(--primary)}
+    .preset-btn.active{background:var(--primary);border-color:var(--primary);color:#fff}
+    .fill.red{background:linear-gradient(90deg,#ef4444,#f87171)}
+    .fill.amber{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+    .parameter-workspace{display:flex;flex-direction:column;gap:10px;padding:4px 0}
+
     /* PAGE CANVAS */
     .page-canvas { width: 100%; display: grid; gap: 16px; }
 
@@ -653,6 +663,23 @@
         <svg viewBox="0 0 24 24" fill="none"><path d="M9 11h6M9 15h6M9 7h6M5 4h14v16H5V4Z" stroke-width="1.8"/></svg>
         <span>Action Center</span>
       </button>
+      <div class="nav-label">Analytics</div>
+      <button class="nav" data-page="trends" onclick="go('trends')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        <span>Quality Trends</span>
+      </button>
+      <button class="nav" data-page="leaderboard" onclick="go('leaderboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 1-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Analyst Leaderboard</span>
+      </button>
+      <button class="nav" data-page="tni" onclick="go('tni')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        <span>TNI &amp; Coaching</span>
+      </button>
+      <button class="nav" data-page="riskactions" onclick="go('riskactions')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>Risk Actions</span>
+      </button>
     </div>
     <div class="source-card">
       <div class="live"><i></i> LIVE SQL LAYER</div>
@@ -729,9 +756,14 @@ const FINNABLE_API = {
       ),
       body: options && options.body ? JSON.stringify(options.body) : undefined
     });
-    let data = {};
-    try { data = await response.json(); } catch(ignore) {}
-    if (!response.ok) throw new Error(data.message || 'Unable to connect to dashboard API.');
+    const contentType = response.headers.get('content-type') || '';
+    let data;
+    if (contentType.includes('text/csv')) {
+      data = await response.text();
+    } else {
+      try { data = await response.json(); } catch(ignore) { data = {}; }
+    }
+    if (!response.ok) throw new Error((data && data.message) || 'Unable to connect to dashboard API.');
     return data;
   },
   async invoke(name, args) {
@@ -806,7 +838,11 @@ const pages = {
   compliance: {title:'Compliance & Transparency',   sub:'Evidence-based risk monitoring without false violation claims.'},
   analysts:   {title:'Analyst Scorecard',           sub:'Diagnose analyst gaps and open the calls behind each outcome.'},
   explorer:   {title:'Call Explorer',               sub:'Search the audit trail and inspect transcript-backed decisions.'},
-  actions:    {title:'Action Center',               sub:'Prioritised interventions with evidence, owner and SLA.'}
+  actions:    {title:'Action Center',               sub:'Prioritised interventions with evidence, owner and SLA.'},
+  trends:     {title:'Day-wise Quality Trends',     sub:'Track score movement, call volume and pitch rate over time.'},
+  leaderboard:{title:'Analyst Leaderboard',         sub:'Quality ranking, pitch performance and risk exposure by analyst.'},
+  tni:        {title:'Training Need Identification',sub:'Parameter heatmap and analyst coaching priorities.'},
+  riskactions:{title:'Risk Action Center',          sub:'Evidence-based management actions for high-risk and critical calls.'}
 };
 
 /* ===== UTILITIES ===== */
@@ -926,20 +962,28 @@ function go(page) {
   document.getElementById('pageTitle').textContent = pages[page].title;
   document.getElementById('pageSubtitle').textContent = pages[page].sub;
   render();
+  if (page === 'trends' && !trendsData) loadTrends('MTD');
+  if (page === 'leaderboard') loadLeaderboard('MTD');
+  if (page === 'tni') loadTNI('MTD');
+  if (page === 'riskactions') loadRiskActions('MTD');
 }
 
 /* ===== RENDER ROUTER ===== */
+const STANDALONE_PAGES = { trends: 1, leaderboard: 1, tni: 1, riskactions: 1 };
 function render() {
-  if(!state.data) return;
+  if(!state.data && !STANDALONE_PAGES[state.page]) return;
   destroyCharts();
   const renderers = {
     overview: renderOverview, sales: renderSales, journey: renderJourney,
     quality: renderQuality, compliance: renderCompliance, analysts: renderAnalysts,
-    explorer: renderExplorer, actions: renderActions
+    explorer: renderExplorer, actions: renderActions,
+    trends: renderTrends, leaderboard: renderLeaderboard, tni: renderTNI, riskactions: renderRiskActions
   };
-  document.getElementById('pageContent').innerHTML = renderers[state.page](state.data);
+  const fn = renderers[state.page];
+  if (!fn) return;
+  document.getElementById('pageContent').innerHTML = fn(state.data);
   bindClicks();
-  drawCharts();
+  if (!STANDALONE_PAGES[state.page]) drawCharts();
 }
 
 function destroyCharts() {
@@ -1528,6 +1572,377 @@ function closeDrawer() {
   root.innerHTML = '';
 }
 document.addEventListener('click', e => { if(e.target.id === 'drawerRoot') closeDrawer(); });
+
+/* ===== TRENDS TAB ===== */
+let trendsData = null;
+
+function renderTrends() {
+  return '<div class="page-canvas">' +
+    '<div class="trend-controls">' +
+      '<div class="preset-btns">' +
+        '<button class="preset-btn active" id="presetMTD" onclick="loadTrends(\'MTD\')">MTD</button>' +
+        '<button class="preset-btn" id="presetWTD" onclick="loadTrends(\'WTD\')">WTD</button>' +
+        '<button class="preset-btn" id="presetD1" onclick="loadTrends(\'D1\')">D-1</button>' +
+      '</div>' +
+      '<div style="display:flex;gap:8px;align-items:center">' +
+        '<input type="date" id="trendFrom" style="height:36px;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:0 10px;font-size:12px">' +
+        '<input type="date" id="trendTo" style="height:36px;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:0 10px;font-size:12px">' +
+        '<button class="btn-primary" onclick="loadTrendsCustom()" style="height:36px;padding:0 14px;font-size:12px">Apply</button>' +
+      '</div>' +
+    '</div>' +
+    '<div class="kpi-grid" id="trendKpiRow">' +
+      '<div class="skeleton skeleton-kpi"></div><div class="skeleton skeleton-kpi"></div>' +
+      '<div class="skeleton skeleton-kpi"></div><div class="skeleton skeleton-kpi"></div>' +
+    '</div>' +
+    '<div class="grid grid-2" style="margin-top:0">' +
+      '<div class="card" style="grid-column:1/-1">' +
+        '<div class="card-head"><div><h3>Day-wise Quality Score Trend</h3><div class="sub">Average quality score per audit date.</div></div></div>' +
+        '<div id="trendLineChart" style="height:320px"></div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="grid grid-2" style="margin-top:0">' +
+      '<div class="card">' +
+        '<div class="card-head"><div><h3>Score Band Distribution</h3><div class="sub">Analyst quality spread across performance bands.</div></div></div>' +
+        '<div id="bandDonutChart" style="height:300px"></div>' +
+      '</div>' +
+      '<div class="card">' +
+        '<div class="card-head"><div><h3>Daily Call Volume &amp; Pitch Attempts</h3><div class="sub">Audit volume vs pitch-attempted calls per day.</div></div></div>' +
+        '<div id="volumeBarChart" style="height:300px"></div>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+function loadTrends(preset) {
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+  const el = document.getElementById('preset' + preset);
+  if (el) el.classList.add('active');
+  fetchTrends({ preset });
+}
+
+function loadTrendsCustom() {
+  const from = (document.getElementById('trendFrom') || {}).value || '';
+  const to = (document.getElementById('trendTo') || {}).value || '';
+  fetchTrends({ from, to });
+}
+
+function fetchTrends(params) {
+  FINNABLE_API.request('/trends/quality', { method: 'POST', body: params })
+    .then(d => {
+      trendsData = d;
+      const trend = d.trend || [];
+      const scores = trend.map(t => t.avgScore).filter(s => s !== null);
+      const avgAll = scores.length ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1) : 'N/A';
+      const totalCalls = trend.reduce((a, t) => a + t.totalCalls, 0);
+      const totalPitch = trend.reduce((a, t) => a + t.pitchAttempts, 0);
+      const highRisk = trend.reduce((a, t) => a + t.highRiskCount, 0);
+      const kpiRow = document.getElementById('trendKpiRow');
+      if (kpiRow) kpiRow.innerHTML =
+        kpi('Avg Quality Score', avgAll, scores.length + ' scored days', 'accent-teal', '') +
+        kpi('Total Calls', totalCalls, (d.dateRange.from || '') + ' → ' + (d.dateRange.to || ''), 'accent-blue', '') +
+        kpi('Pitch Attempts', totalPitch, (totalCalls ? Math.round(totalPitch / totalCalls * 100) : 0) + '% of calls', 'accent-amber', '') +
+        kpi('High Risk Calls', highRisk, 'Snapmint High + Critical', 'accent-red', '');
+      drawTrendCharts(d);
+    })
+    .catch(e => console.error('Trend load failed:', e));
+}
+
+function drawTrendCharts(d) {
+  const trend = d.trend || [];
+  const bands = d.scoreBands || [];
+  destroyChart('trendLineChart');
+  destroyChart('bandDonutChart');
+  destroyChart('volumeBarChart');
+
+  if (trend.length && document.getElementById('trendLineChart')) {
+    const c = new ApexCharts(document.getElementById('trendLineChart'), {
+      chart: { type: 'line', height: 320, background: 'transparent', toolbar: { show: false } },
+      theme: { mode: 'dark' },
+      series: [{ name: 'Avg Quality Score', data: trend.map(t => ({ x: t.date, y: t.avgScore })) }],
+      stroke: { curve: 'smooth', width: 3 },
+      markers: { size: 4 },
+      colors: ['#3b82f6'],
+      xaxis: { type: 'datetime', labels: { style: { colors: '#94a3b8', fontSize: '11px' } } },
+      yaxis: { min: 0, max: 100, labels: { style: { colors: '#94a3b8', fontSize: '11px' } } },
+      grid: { borderColor: '#1e293b' },
+      tooltip: { theme: 'dark', x: { format: 'dd MMM yyyy' } },
+      annotations: { yaxis: [{ y: 80, borderColor: '#06d6a0', label: { text: 'Target 80%', style: { color: '#06d6a0', background: 'transparent', fontSize: '11px' } } }] }
+    });
+    c.render();
+    state.charts['trendLineChart'] = c;
+  }
+
+  if (bands.length && document.getElementById('bandDonutChart')) {
+    const c2 = new ApexCharts(document.getElementById('bandDonutChart'), {
+      chart: { type: 'donut', height: 300, background: 'transparent' },
+      theme: { mode: 'dark' },
+      series: bands.map(b => b.count),
+      labels: bands.map(b => b.label),
+      colors: ['#06d6a0', '#3b82f6', '#f59e0b', '#ef4444', '#6b7280', '#8b5cf6'],
+      plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: 'Total', color: '#94a3b8' } } } } },
+      legend: { position: 'right', labels: { colors: '#94a3b8' } },
+      tooltip: { theme: 'dark' }
+    });
+    c2.render();
+    state.charts['bandDonutChart'] = c2;
+  }
+
+  if (trend.length && document.getElementById('volumeBarChart')) {
+    const c3 = new ApexCharts(document.getElementById('volumeBarChart'), {
+      chart: { type: 'bar', height: 300, background: 'transparent', stacked: false, toolbar: { show: false } },
+      theme: { mode: 'dark' },
+      series: [
+        { name: 'Total Calls', data: trend.map(t => ({ x: t.date, y: t.totalCalls })) },
+        { name: 'Pitch Attempts', data: trend.map(t => ({ x: t.date, y: t.pitchAttempts })) }
+      ],
+      colors: ['#3b82f6', '#06d6a0'],
+      xaxis: { type: 'datetime', labels: { style: { colors: '#94a3b8', fontSize: '11px' } } },
+      yaxis: { labels: { style: { colors: '#94a3b8' } } },
+      grid: { borderColor: '#1e293b' },
+      legend: { labels: { colors: '#94a3b8' } },
+      tooltip: { theme: 'dark', x: { format: 'dd MMM yyyy' } }
+    });
+    c3.render();
+    state.charts['volumeBarChart'] = c3;
+  }
+}
+
+function destroyChart(id) {
+  if (state.charts && state.charts[id]) {
+    try { state.charts[id].destroy(); } catch(e) {}
+    delete state.charts[id];
+  }
+}
+
+/* ===== LEADERBOARD TAB ===== */
+let leaderboardData = null;
+
+function renderLeaderboard() {
+  return '<div class="page-canvas">' +
+    '<div class="trend-controls">' +
+      '<div class="preset-btns">' +
+        '<button class="preset-btn active" onclick="loadLeaderboard(\'MTD\')">MTD</button>' +
+        '<button class="preset-btn" onclick="loadLeaderboard(\'WTD\')">WTD</button>' +
+        '<button class="preset-btn" onclick="loadLeaderboard(\'D1\')">D-1</button>' +
+      '</div>' +
+    '</div>' +
+    '<div id="lbContent"><div class="loading"><div class="spinner"></div>Loading leaderboard...</div></div>' +
+  '</div>';
+}
+
+function loadLeaderboard(preset) {
+  const slot = document.getElementById('lbContent');
+  if (slot) slot.innerHTML = '<div class="loading"><div class="spinner"></div>Loading...</div>';
+  FINNABLE_API.request('/analysts/leaderboard', { method: 'POST', body: { preset } })
+    .then(d => {
+      leaderboardData = d;
+      const lb = d.leaderboard || [];
+      if (!lb.length) { if(slot) slot.innerHTML = empty('No analyst data for selected period.'); return; }
+      const topRisk = lb.filter(a => a.highRiskCount > 0).sort((a,b)=>b.highRiskCount-a.highRiskCount).slice(0, 3);
+      let html = '';
+      if (topRisk.length) {
+        html += '<div class="card" style="margin-bottom:0;border-color:#ef4444">' +
+          '<div class="card-head"><div><h3 style="color:#ef4444">FE Risk Watchlist</h3><div class="sub">Analysts with highest risk exposure this period.</div></div></div>' +
+          '<div class="analysis-strip">' + topRisk.map(a =>
+            kpi(esc(a.agentName), a.highRiskCount + ' risk calls', 'Avg score: ' + (a.avgScore || 'N/A'), 'accent-red', 'openAnalystTrend(\'' + esc(a.agentName).replace(/'/g,"&#39;") + '\')')
+          ).join('') + '</div></div>';
+      }
+      html += '<div class="card"><div class="card-head"><div><h3>Analyst Quality Leaderboard</h3>' +
+        '<div class="sub">Ranked lowest score first (coaching priority). Click analyst to see day-wise trend.</div></div></div>' +
+        '<div class="table-wrap"><table><thead><tr><th>Rank</th><th>Analyst</th><th>Calls</th><th>Avg Score</th>' +
+        '<th>Opportunities</th><th>Pitch %</th><th>Strong Pitch</th><th>High Risk</th><th>Disbursals</th><th>Last Call</th></tr></thead><tbody>' +
+        lb.map(a => '<tr>' +
+          '<td><b>#' + a.rank + '</b></td>' +
+          '<td><button class="link" onclick="openAnalystTrend(\'' + esc(a.agentName).replace(/'/g,"&#39;") + '\')">' + esc(a.agentName) + '</button></td>' +
+          '<td>' + a.totalCalls + '</td>' +
+          '<td>' + scorePill(a.avgScore) + '</td>' +
+          '<td>' + a.opportunities + '</td>' +
+          '<td>' + a.pitchAttemptRate + '%</td>' +
+          '<td>' + a.strongPitch + '</td>' +
+          '<td><span class="tag ' + (a.highRiskCount > 0 ? 'high' : '') + '">' + a.highRiskCount + '</span></td>' +
+          '<td>' + a.disbursals + '</td>' +
+          '<td>' + esc(a.lastCallDate) + '</td>' +
+        '</tr>').join('') +
+        '</tbody></table></div></div>';
+      if (slot) slot.innerHTML = html;
+    })
+    .catch(e => { if(slot) slot.innerHTML = '<div class="empty">' + esc(e.message) + '</div>'; });
+}
+
+function openAnalystTrend(agentName) {
+  openDrawer('<div class="loading"><div class="spinner"></div>Loading analyst trend...</div>');
+  FINNABLE_API.request('/analysts/' + encodeURIComponent(agentName) + '/trend', { method: 'POST', body: { preset: 'MTD' } })
+    .then(d => {
+      const trend = d.trend || [];
+      const chartId = 'analystTrendChart_' + Date.now();
+      openDrawer(
+        '<div class="drawer-top"><div><h2>Analyst Trend · ' + esc(agentName) + '</h2>' +
+        '<p>' + trend.length + ' days of data · MTD</p></div>' +
+        '<button class="close" onclick="closeDrawer()">×</button></div>' +
+        '<div class="drawer-body">' +
+          '<div id="' + chartId + '" style="height:280px;margin-bottom:20px"></div>' +
+          '<div class="table-wrap"><table><thead><tr><th>Date</th><th>Avg Score</th><th>Total Calls</th><th>Scored</th><th>Pitch Attempts</th><th>High Risk</th></tr></thead><tbody>' +
+          trend.map(t => '<tr><td>' + esc(t.date) + '</td><td>' + scorePill(t.avgScore) + '</td><td>' + t.totalCalls + '</td><td>' + t.scoredCalls + '</td><td>' + t.pitchAttempts + '</td><td>' + t.highRiskCount + '</td></tr>').join('') +
+          '</tbody></table></div>' +
+        '</div>'
+      );
+      if (trend.length) {
+        setTimeout(() => {
+          const el = document.getElementById(chartId);
+          if (!el) return;
+          new ApexCharts(el, {
+            chart: { type: 'line', height: 280, background: 'transparent', toolbar: { show: false } },
+            theme: { mode: 'dark' },
+            series: [{ name: 'Avg Score', data: trend.map(t => ({ x: t.date, y: t.avgScore })) }],
+            colors: ['#3b82f6'], stroke: { curve: 'smooth', width: 2 },
+            xaxis: { type: 'datetime', labels: { style: { colors: '#94a3b8' } } },
+            yaxis: { min: 0, max: 100, labels: { style: { colors: '#94a3b8' } } },
+            grid: { borderColor: '#1e293b' }, tooltip: { theme: 'dark' },
+            annotations: { yaxis: [{ y: 80, borderColor: '#06d6a0', label: { text: '80% Target', style: { color: '#06d6a0', background: 'transparent', fontSize: '11px' } } }] }
+          }).render();
+        }, 100);
+      }
+    })
+    .catch(e => openDrawer('<div class="drawer-body"><div class="empty">' + esc(e.message) + '</div></div>'));
+}
+
+/* ===== TNI TAB ===== */
+function renderTNI() {
+  return '<div class="page-canvas">' +
+    '<div class="trend-controls">' +
+      '<div class="preset-btns">' +
+        '<button class="preset-btn active" onclick="loadTNI(\'MTD\')">MTD</button>' +
+        '<button class="preset-btn" onclick="loadTNI(\'WTD\')">WTD</button>' +
+        '<button class="preset-btn" onclick="loadTNI(\'D1\')">D-1</button>' +
+      '</div>' +
+    '</div>' +
+    '<div id="tniContent"><div class="loading"><div class="spinner"></div>Loading TNI data...</div></div>' +
+  '</div>';
+}
+
+function loadTNI(preset) {
+  const slot = document.getElementById('tniContent');
+  if (slot) slot.innerHTML = '<div class="loading"><div class="spinner"></div>Loading...</div>';
+  FINNABLE_API.request('/tni', { method: 'POST', body: { preset } })
+    .then(d => {
+      const heatmap = d.heatmap || [];
+      const analystTNI = d.analystTNI || [];
+      const processTNI = d.processTNI || [];
+      const ps = d.prioritySummary || {};
+      let html = '<div class="kpi-grid">' +
+        kpi('Critical TNI', ps.Critical || 0, 'Fatal exposure — same-day', 'accent-red', '') +
+        kpi('High Priority', ps.High || 0, '3+ defects — formal coaching', 'accent-amber', '') +
+        kpi('Medium Priority', ps.Medium || 0, '2 defects — targeted coaching', 'accent-blue', '') +
+        kpi('Low Priority', ps.Low || 0, 'Monitor and early feedback', 'accent-teal', '') +
+      '</div>';
+
+      if (heatmap.length) {
+        html += '<div class="card"><div class="card-head"><div><h3>Parameter Health Heatmap</h3>' +
+          '<div class="sub">Average score percentage per audit parameter. Red = needs coaching focus.</div></div></div>' +
+          '<div class="parameter-workspace">' +
+          heatmap.map(p =>
+            '<div class="mini-row">' +
+              '<b style="min-width:110px;font-size:13px">' + esc(p.name) + '</b>' +
+              '<div class="track" style="flex:1"><div class="fill ' + ((p.avgPct || 0) < 70 ? 'red' : (p.avgPct || 0) < 85 ? 'amber' : '') + '" style="width:' + Math.min(p.avgPct || 0, 100) + '%"></div></div>' +
+              '<strong style="min-width:50px;text-align:right;font-family:var(--font-mono);font-size:13px">' + (p.avgPct !== null ? p.avgPct + '%' : 'N/A') + '</strong>' +
+              '<span class="tag ' + ((p.failRate || 0) > 30 ? 'high' : (p.failRate || 0) > 15 ? 'medium' : '') + '" style="margin-left:8px;min-width:80px;text-align:center">' + (p.failRate !== null ? p.failRate + '% fail' : '') + '</span>' +
+              '<span style="font-size:11px;color:var(--subtle);margin-left:8px">' + p.scoredCalls + ' scored</span>' +
+            '</div>'
+          ).join('') +
+          '</div></div>';
+      }
+
+      html += '<div class="grid grid-2">' +
+        '<div class="card"><div class="card-head"><div><h3>Process-Level TNI</h3><div class="sub">Top defect categories across all analysts.</div></div></div>' +
+        '<div class="table-wrap"><table><thead><tr><th>Category</th><th>Sub-Category</th><th>Defects</th><th>Fatal</th><th>Analysts</th><th>Priority</th></tr></thead><tbody>' +
+        (processTNI.slice(0, 20).map(r =>
+          '<tr><td><b>' + esc(r.category) + '</b></td><td>' + esc(r.subCategory) + '</td>' +
+          '<td>' + r.defectCount + '</td><td>' + r.fatalCount + '</td><td>' + r.affectedAnalysts + '</td>' +
+          '<td>' + tag(r.priority) + '</td></tr>'
+        ).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--subtle)">No defect data</td></tr>') +
+        '</tbody></table></div></div>' +
+
+        '<div class="card"><div class="card-head"><div><h3>Analyst TNI Queue</h3><div class="sub">Coaching actions ranked by priority.</div></div></div>' +
+        '<div class="table-wrap"><table><thead><tr><th>Analyst</th><th>Category</th><th>Defects</th><th>Fatal</th><th>Priority</th><th>Coaching Need</th></tr></thead><tbody>' +
+        (analystTNI.slice(0, 30).map(r =>
+          '<tr><td><button class="link" data-agent="' + esc(r.agentName) + '">' + esc(r.agentName) + '</button></td>' +
+          '<td>' + esc(r.category) + '</td><td>' + r.defectCount + '</td><td>' + r.fatalCount + '</td>' +
+          '<td>' + tag(r.priority) + '</td>' +
+          '<td style="font-size:11px;color:var(--muted);max-width:200px;white-space:normal">' + esc(r.coachingNeed) + '</td></tr>'
+        ).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--subtle)">No TNI data</td></tr>') +
+        '</tbody></table></div></div></div>';
+
+      if (slot) { slot.innerHTML = html; bindClicks(); }
+    })
+    .catch(e => { if(slot) slot.innerHTML = '<div class="empty">' + esc(e.message) + '</div>'; });
+}
+
+/* ===== RISK ACTIONS TAB ===== */
+let currentRiskPreset = 'MTD';
+
+function renderRiskActions() {
+  return '<div class="page-canvas">' +
+    '<div class="trend-controls">' +
+      '<div class="preset-btns">' +
+        '<button class="preset-btn active" onclick="loadRiskActions(\'MTD\')">MTD</button>' +
+        '<button class="preset-btn" onclick="loadRiskActions(\'WTD\')">WTD</button>' +
+        '<button class="preset-btn" onclick="loadRiskActions(\'D1\')">D-1</button>' +
+      '</div>' +
+      '<button onclick="exportRisk()" style="height:36px;padding:0 16px;border:1px solid var(--border);background:transparent;color:var(--muted);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px">' +
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>' +
+        'Export CSV' +
+      '</button>' +
+    '</div>' +
+    '<div id="riskContent"><div class="loading"><div class="spinner"></div>Loading risk actions...</div></div>' +
+  '</div>';
+}
+
+function loadRiskActions(preset) {
+  currentRiskPreset = preset;
+  const slot = document.getElementById('riskContent');
+  if (slot) slot.innerHTML = '<div class="loading"><div class="spinner"></div>Loading...</div>';
+  FINNABLE_API.request('/risk', { method: 'POST', body: { preset } })
+    .then(d => {
+      const actions = d.actions || [];
+      const s = d.summary || {};
+      let html = '<div class="kpi-grid">' +
+        kpi('P1 Actions', s.p1Count || 0, 'Same-day validation required', 'accent-red', '') +
+        kpi('P2 Actions', s.p2Count || 0, '24-hour coaching required', 'accent-amber', '') +
+        kpi('Critical Cases', s.criticalCount || 0, 'Confirmed violations', 'accent-indigo', '') +
+        kpi('Analysts at Risk', s.uniqueAgents || 0, 'Distinct agents with risk flag', 'accent-blue', '') +
+      '</div>';
+      html += '<div class="card"><div class="card-head"><div><h3>Management Risk Action Queue</h3>' +
+        '<div class="sub">Evidence-linked actions ranked by priority. Click Call ID to view full evidence trace.</div></div></div>' +
+        '<div class="table-wrap"><table><thead><tr><th>Priority</th><th>Call ID</th><th>Analyst</th><th>Date</th><th>Risk Level</th><th>Score</th><th>Trigger</th><th>Recommended Action</th><th>Coaching Need</th></tr></thead><tbody>' +
+        (actions.map(a => '<tr>' +
+          '<td>' + tag(a.priority) + '</td>' +
+          '<td><button class="link" data-call="' + esc(a.callId) + '">' + esc(a.callId) + '</button></td>' +
+          '<td>' + esc(a.agentName) + '</td>' +
+          '<td>' + esc(a.callDate) + '</td>' +
+          '<td><span class="tag ' + (a.riskLevel === 'Critical' || a.riskLevel === 'High' ? 'high' : 'medium') + '">' + esc(a.riskLevel) + '</span></td>' +
+          '<td>' + scorePill(a.score) + '</td>' +
+          '<td style="font-size:11px;color:var(--muted);max-width:160px;white-space:normal">' + esc(a.trigger) + '</td>' +
+          '<td style="font-size:11px;color:var(--text);max-width:200px;white-space:normal">' + esc(a.recommendedAction) + '</td>' +
+          '<td style="font-size:11px;color:var(--muted);max-width:160px;white-space:normal">' + esc(a.coachingNeed) + '</td>' +
+        '</tr>').join('') || '<tr><td colspan="9" style="text-align:center;color:var(--subtle);padding:24px">No risk actions for selected period</td></tr>') +
+        '</tbody></table></div></div>';
+      if (slot) { slot.innerHTML = html; bindClicks(); }
+    })
+    .catch(e => { if(slot) slot.innerHTML = '<div class="empty">' + esc(e.message) + '</div>'; });
+}
+
+function exportRisk() {
+  FINNABLE_API.request('/export/csv', { method: 'POST', body: { preset: currentRiskPreset } })
+    .then(csvText => {
+      const blob = new Blob([csvText], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'finnable_risk_' + currentRiskPreset + '.csv';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    })
+    .catch(e => alert('Export failed: ' + e.message));
+}
 </script>
 </body>
 </html>

@@ -30,6 +30,19 @@ app.use((req, res, next) => {
 });
 
 app.use('/api', apiRouter);
+
+const trendsRouter = require('./routes/trends');
+const analystsRouter = require('./routes/analysts');
+const tniRouter = require('./routes/tni');
+const riskRouter = require('./routes/risk');
+const exportRouter = require('./routes/export');
+
+app.use('/api/trends', trendsRouter);
+app.use('/api/analysts', analystsRouter);
+app.use('/api/tni', tniRouter);
+app.use('/api/risk', riskRouter);
+app.use('/api/export', exportRouter);
+
 app.use(express.static(path.join(__dirname, '..', 'public'), { maxAge: config.nodeEnv === 'production' ? '1h' : 0 }));
 app.get('/', (_req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
