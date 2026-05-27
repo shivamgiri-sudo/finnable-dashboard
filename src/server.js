@@ -56,7 +56,7 @@ app.use((error, _req, res, _next) => {
   });
 });
 
-const server = app.listen(config.port, async () => {
+const server = app.listen(config.port, '0.0.0.0', async () => {
   try {
     const warmed = await warmPool();
     console.log(`Finnable Intelligence dashboard running at http://localhost:${config.port}`);
