@@ -7,6 +7,17 @@ const engine = require('../engine/analyticsEngine');
 const summaryCache = new Map();
 const mappingCache = new Map();
 
+// Agent name map: MAS ID -> real name, loaded once and cached indefinitely
+let agentNameMap = null;
+async function getAgentNameMap() {
+  if (!agentNameMap) agentNameMap = await repository.fetchAgentNameMap();
+  return agentNameMap;
+}
+
+function resolveAgentName(masId, nameMap) {
+  return (nameMap && nameMap[masId]) || masId;
+}
+
 function readCache(cache, key, ttlMs) {
   const item = cache.get(key);
   if (!item) return null;
@@ -27,8 +38,15 @@ async function getSummaryRows(clientId, forceRefresh = false) {
     const cached = readCache(summaryCache, key, config.summaryCacheTtlMs);
     if (cached) return { ...cached, cacheHit: true };
   }
-  const query = await repository.fetchSummaryRows(key);
-  const value = { rows: query.rows, queryMs: query.elapsedMs };
+  const [query, nameMap] = await Promise.all([
+    repository.fetchSummaryRows(key),
+    getAgentNameMap()
+  ]);
+  const rows = query.rows.map(r => ({
+    ...r,
+    AgentName: resolveAgentName(r.AgentName, nameMap)
+  }));
+  const value = { rows, queryMs: query.elapsedMs };
   writeCache(summaryCache, key, value);
   return { ...value, cacheHit: false };
 }
@@ -155,10 +173,14 @@ async function getCallDetail(callId, clientId) {
   const client = String(clientId || config.defaultClientId).trim();
   if (!id) throw new Error('Call ID is required.');
 
-  const query = await repository.fetchCallDetail(client, id);
+  const [query, nameMap] = await Promise.all([
+    repository.fetchCallDetail(client, id),
+    getAgentNameMap()
+  ]);
   if (!query.row) throw new Error('Selected call was not found.');
 
-  const row = engine.enrich_(query.row);
+  const rawRow = { ...query.row, AgentName: resolveAgentName(query.row.AgentName, nameMap) };
+  const row = engine.enrich_(rawRow);
   const trace = engine.buildDetailedEvidencePackage_(row);
   const detail = engine.lightRecord_(row);
   detail.qualityBreakup = row.FeedbackContext;

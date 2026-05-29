@@ -82,6 +82,23 @@ async function countClientRows(clientId) {
   return { total: Number(rows[0].total || 0), elapsedMs: Date.now() - started };
 }
 
+async function fetchAgentNameMap() {
+  try {
+    const [rows] = await pool.execute(
+      'SELECT employee_code, agent_name FROM Shivamgiri.ci_agent_master WHERE active_status = 1'
+    );
+    const map = {};
+    rows.forEach(r => {
+      if (r.employee_code && r.agent_name && r.agent_name !== r.employee_code) {
+        map[String(r.employee_code).trim()] = String(r.agent_name).trim();
+      }
+    });
+    return map;
+  } catch (err) {
+    return {};
+  }
+}
+
 async function explainCallDetail(clientId, callId) {
   const sql = `
     EXPLAIN SELECT ${columnList(['id', 'client_id', 'AgentName', 'CallDate', 'TranscribeText', 'FeedbackContext'])}
@@ -99,6 +116,7 @@ module.exports = {
   fetchSummaryRows,
   fetchCallDetail,
   fetchMappingRows,
+  fetchAgentNameMap,
   countClientRows,
   explainCallDetail
 };

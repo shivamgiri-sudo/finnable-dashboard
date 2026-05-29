@@ -99,11 +99,11 @@ function enrich_(raw) {
   row.callType = value_(row.ConsumptionType);
   row.journeyStage = value_(row.AgeofConsumption);
   row.pitchStrength = value_(row.UpsellingEfforts);
-  row.score = numeric_(row.Feedback_Category);
+  row.score = numeric_(row.Feedback_Category) ?? scoreFromContext_(row.FeedbackContext);
   row.nonAssessable = row.callType === 'No Meaningful Interaction';
   row.qualityBand = qualityBand_(row);
   row.opportunity = ['Sales', 'Mixed'].indexOf(row.callType) >= 0;
-  row.progressed = ['Interested But Pending', 'Application In Progress', 'Application Completed - Verification Pending', 'Customer Agreed To Proceed'].indexOf(row.CallDisposition) >= 0;
+  row.progressed = ['Interested_Need loan', 'Interested But Pending', 'Application In Progress', 'Application Completed - Verification Pending', 'Customer Agreed To Proceed', 'Disbursed - Transcript Confirmed'].indexOf(row.CallDisposition) >= 0;
   row.disbursal = row.SaleDone === '1';
   row.riskBucket = riskBucket_(row);
   row.supportStatus = value_(row.Further_Assistance);
@@ -121,6 +121,19 @@ function numeric_(value) {
   return Number(text);
 }
 
+// Extract quality percentage from FeedbackContext "Total:X/Y" or "Total:X"
+function scoreFromContext_(feedbackContext) {
+  const text = String(feedbackContext || '');
+  if (!text || /Non-Assessable/i.test(text)) return null;
+  const match = text.match(/Total:(\d+)(?:\/(\d+))?/i);
+  if (!match) return null;
+  const num = Number(match[1]);
+  const denom = match[2] ? Number(match[2]) : null;
+  if (denom && denom > 0) return Math.round(num / denom * 100);
+  if (num >= 0 && num <= 100) return num;
+  return null;
+}
+
 function qualityBand_(row) {
   if (row.nonAssessable) return 'Non-Assessable';
   if (row.score === null) return 'Limited Evidence';
@@ -132,8 +145,7 @@ function qualityBand_(row) {
 }
 
 function riskBucket_(row) {
-  if (row.Snapmint_Pitch === 'Critical') return 'Confirmed Critical Violation';
-  if (row.Snapmint_Pitch === 'High') return 'High Priority Risk Trigger';
+  if (row.Snapmint_Pitch === 'High' || row.Snapmint_Pitch === 'Critical') return 'High Priority Risk Trigger';
   if (row.Snapmint_Pitch === 'Medium') return 'Medium Transparency / Sensitive Flag';
   if (/Self-Entry Guidance|Safe OTP/i.test(String(row.SensitiveWordUsed || ''))) return 'Safe / Guided Self-Entry';
   return 'No Risk Flag';
@@ -147,12 +159,11 @@ function salesLeakage_(row) {
   if (row.CustomerObjectionCategory !== 'None' && row.ObjectionHandling !== '1') return 'Objection Not Resolved';
   if (['Support Pending', 'Callback Required', 'Escalation Required'].indexOf(row.Further_Assistance) >= 0) return 'Journey Blocker';
   if (row.Order_Consent !== '1' && !row.progressed && !row.disbursal) return 'Consent Gap';
-  if (['Weak Closing', 'Missing Closing', 'Misleading Closing'].indexOf(row.Call_Closing) >= 0) return 'Closing Gap';
+  if (['Weak Closing', 'Missing Closing', 'Misleading Closing', 'Call Dropped'].indexOf(row.Call_Closing) >= 0) return 'Closing Gap';
   return 'No Major Leakage';
 }
 
 function actionFor_(row) {
-  if (row.riskBucket === 'Confirmed Critical Violation') return {priority: 'P1 Confirmed', owner: 'Compliance | QA', sla: 'Same Day', reason: row.SensitiveWordUsed};
   if (row.riskBucket === 'High Priority Risk Trigger') return {priority: 'P1 Validate', owner: 'QA | Compliance', sla: 'Same Day', reason: row.SensitiveWordUsed};
   if (row.riskBucket === 'Medium Transparency / Sensitive Flag') return {priority: 'P2 Coach / Validate', owner: 'QA | TL', sla: '24 Hours', reason: row.SensitiveWordUsed};
   if (row.opportunity && ['No Pitch Attempted', 'Weak Pitch', 'Pricing Disclosure Gap'].indexOf(row.salesLeakage) >= 0) return {priority: 'P3 Sales Coaching', owner: 'TL | Sales Trainer', sla: '48 Hours', reason: row.salesLeakage};
@@ -252,7 +263,7 @@ function buildDetailedEvidencePackage_(row) {
       'Sensitive guidance flag'
     );
   }
-  if (/Timeline Assurance|Timeline Promise/i.test(String(row.SensitiveWordUsed || ''))) {
+  if (/Timeline Assurance Before Final Outcome/i.test(String(row.SensitiveWordUsed || ''))) {
     addObserved(
       'Compliance', 'medium', 'Outcome timeline assurance',
       'A disbursal or credit timeline is communicated before actual outcome confirmation. This is a transparency mark-down, not conversion evidence.',
@@ -263,19 +274,22 @@ function buildDetailedEvidencePackage_(row) {
       'Transparency mark-down'
     );
   }
-  if (/Approval/i.test(String(row.SensitiveWordUsed || ''))) {
+  // "Loan has been system approved" is standard Bajaj script — not a mark-down by itself.
+  // Only flag as compliance concern when the AI has confirmed the approval was contradicted
+  // by an ineligibility outcome (Approval Claim Contradicted By Eligibility Outcome tag).
+  if (/Approval Claim Contradicted By Eligibility Outcome/i.test(String(row.SensitiveWordUsed || ''))) {
     addObserved(
       'Compliance',
-      row.Snapmint_Pitch === 'High' ? 'high' : 'medium',
-      'Approval language used',
-      'Approval wording is highlighted because it must match the customer stage and approved process script.',
+      'high',
+      'Approval claim contradicted by eligibility outcome',
+      'Approval language was used but the customer was subsequently found ineligible. This is a high-priority transparency concern requiring same-day validation.',
       [
         /loan\s+has\s+been\s+(?:system\s+)?approved/i,
         /loan\s+has\s+this\s+system\s+approved/i,
         /pre[\s-]?approved/i,
         /system\s+approved/i
       ],
-      'Transparency observation'
+      'Approval contradiction — compliance breach'
     );
   }
   if (/Self-Entry Guidance|Payment Credential/i.test(String(row.SensitiveWordUsed || ''))) {
@@ -298,27 +312,28 @@ function buildDetailedEvidencePackage_(row) {
       addNotEvidenced('Pitch', 'medium', 'No persuasive sales pitch evidenced',
         'A Sales/Mixed opportunity exists, but no value-based pitch was identified for the customer.');
     } else if (row.pitchStrength === 'Weak') {
+      // Look for actual pitch content — benefit statement, EMI, amount, or product mention
       if (!addObserved(
-        'Pitch', 'medium', 'Weak pitch evidence',
-        'The conversation references a loan/approval or application step, but does not evidence a complete benefit-led sales pitch.',
+        'Pitch', 'medium', 'Weak pitch — limited benefit evidence',
+        'A pitch attempt was made but lacks the complete benefit framing (amount + EMI/rate + next step) required for a strong pitch.',
         [
-          /loan\s+has\s+been\s+(?:system\s+)?approved[^.?!]{0,100}/i,
-          /pre[\s-]?approved[^.?!]{0,100}/i,
-          /system\s+approved[^.?!]{0,100}/i,
-          /personal\s+loan[^.?!]{0,110}/i
+          /\b(?:emi|e\s*m\s*i)\b[^.?!]{0,100}/i,
+          /\b(?:interest|rate|roi)\b[^.?!]{0,100}/i,
+          /\b(?:personal\s+loan|loan\s+amount|loan\s+offer)\b[^.?!]{0,110}/i,
+          /\b(?:benefit|advantage|quick\s+disbursal|instant|easy)\b[^.?!]{0,100}/i
         ],
         'Pitch mark-down'
       )) {
-        addNotEvidenced('Pitch', 'medium', 'Weak pitch evidence',
-          'The pitch score is low and no clear customer-relevant benefit statement can be traced in the transcript.');
+        addNotEvidenced('Pitch', 'medium', 'Weak pitch — no benefit phrase found',
+          'The pitch score is low and no clear customer-relevant benefit statement (EMI, rate, amount, convenience) was found in the transcript.');
       }
     } else if (row.pitchStrength === 'Average' && scoreOf('Pitch').score !== null && scoreOf('Pitch').score < scoreOf('Pitch').max) {
       if (!addObserved(
         'Pitch', 'info', 'Partial pitch evidence',
         'A product offer or loan benefit is discussed, but the pitch is incomplete against the full sales standard.',
         [
-          /(?:approved|pre[\s-]?approved)[^.?!]{0,100}/i,
-          /(?:loan|amount|interest|emi)[^.?!]{0,100}/i
+          /\b(?:emi|e\s*m\s*i)\b[^.?!]{0,100}/i,
+          /\b(?:loan|amount|interest|emi)\b[^.?!]{0,100}/i
         ],
         'Partial pitch mark-down'
       )) {
@@ -558,7 +573,7 @@ function buildSummary_(rows) {
     objectionHandled: objections.filter(function(r) { return r.ObjectionHandling === '1'; }).length,
     highRiskTriggers: rows.filter(function(r) { return r.riskBucket === 'High Priority Risk Trigger'; }).length,
     mediumFlags: rows.filter(function(r) { return r.riskBucket === 'Medium Transparency / Sensitive Flag'; }).length,
-    criticalConfirmed: rows.filter(function(r) { return r.riskBucket === 'Confirmed Critical Violation'; }).length,
+    safeGuidance: rows.filter(function(r) { return r.riskBucket === 'Safe / Guided Self-Entry'; }).length,
     disbursalSignal: rows.filter(function(r) { return r.disbursal; }).length
   };
 }
@@ -662,7 +677,7 @@ function buildActions_(rows, mappings) {
       insight: row.Feedback
     };
   }).sort(function(a, b) {
-    const rank = {'P1 Confirmed': 1, 'P1 Validate': 2, 'P2 Coach / Validate': 3, 'P3 Sales Coaching': 4, 'P3 Journey Follow-Up': 5};
+    const rank = {'P1 Validate': 1, 'P2 Coach / Validate': 2, 'P3 Sales Coaching': 3, 'P3 Journey Follow-Up': 4};
     return (rank[a.priority] || 9) - (rank[b.priority] || 9);
   });
 }
@@ -676,7 +691,7 @@ function buildAnalysts_(rows, mappings) {
   return Object.keys(grouped).map(function(agent) {
     return buildSingleAnalyst_(agent, grouped[agent], mappings);
   }).sort(function(a, b) {
-    const rank = {'P1 Confirmed': 1, 'P1 Validate': 2, 'P2 Coach / Validate': 3, 'P3 Sales Coaching': 4, 'P3 Journey Follow-Up': 5, 'Monitor': 9};
+    const rank = {'P1 Validate': 1, 'P2 Coach / Validate': 2, 'P3 Sales Coaching': 3, 'P3 Journey Follow-Up': 4, 'Monitor': 9};
     return (rank[a.priority] || 9) - (rank[b.priority] || 9) || a.avgQuality - b.avgQuality;
   });
 }

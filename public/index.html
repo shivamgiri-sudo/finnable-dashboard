@@ -44,7 +44,7 @@
     .hidden { display: none !important; }
 
     /* SCROLLBAR */
-    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
     ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 999px; }
     ::-webkit-scrollbar-thumb:hover { background: #60a5fa; }
@@ -220,10 +220,10 @@
     .topbar {
       position: sticky; top: 0; z-index: 7;
       background: rgba(6,10,20,0.94); backdrop-filter: blur(24px);
-      border-bottom: 1px solid rgba(59,130,246,0.1); padding: 16px 28px 14px;
+      border-bottom: 1px solid rgba(59,130,246,0.1); padding: 10px 20px 10px;
       box-shadow: 0 4px 24px rgba(0,0,0,0.3);
     }
-    .topline { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+    .topline { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
     .page-heading h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.04em; margin: 0; color: var(--text); }
     .page-heading p { font-size: 12px; color: var(--muted); margin: 3px 0 0; }
     .top-actions { display: flex; align-items: center; gap: 10px; }
@@ -250,7 +250,7 @@
     .advanced.show { display: flex; }
 
     /* CONTENT */
-    .content { padding: 24px 28px 48px; }
+    .content { padding: 14px 20px 32px; }
 
     /* INTELLIGENCE SIGNAL BOX */
     .signal-box {
@@ -326,7 +326,7 @@
     .preset-btn.active{background:linear-gradient(135deg,var(--primary),#2563eb);color:#fff;box-shadow:0 2px 12px rgba(59,130,246,0.35)}
 
     /* PAGE CANVAS */
-    .page-canvas { width: 100%; display: grid; gap: 16px; }
+    .page-canvas { width: 100%; display: grid; gap: 12px; }
 
     /* KPI GRID */
     .kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(160px, 1fr)); gap: 12px; }
@@ -380,36 +380,35 @@
 
     /* HERO */
     .hero {
-      border-radius: 22px; padding: 32px;
-      background: radial-gradient(circle at 90% 10%, rgba(6,214,160,0.15), transparent 40%),
-                  radial-gradient(circle at 10% 90%, rgba(59,130,246,0.14), transparent 40%),
-                  radial-gradient(circle at 50% 50%, rgba(139,92,246,0.06), transparent 60%),
+      border-radius: 16px; padding: 18px 24px;
+      background: radial-gradient(circle at 90% 10%, rgba(6,214,160,0.12), transparent 40%),
+                  radial-gradient(circle at 10% 90%, rgba(59,130,246,0.1), transparent 40%),
                   linear-gradient(120deg, #090f1d, #0e1a2e 50%, #07101e);
       border: 1px solid rgba(59,130,246,0.15);
-      color: var(--text); box-shadow: var(--shadow), 0 0 60px rgba(59,130,246,0.08);
-      display: grid; grid-template-columns: 1fr 340px; gap: 24px;
-      margin-bottom: 0; overflow: hidden;
+      color: var(--text); box-shadow: var(--shadow);
+      display: grid; grid-template-columns: 1fr 260px; gap: 20px;
+      margin-bottom: 0; overflow: hidden; align-items: center;
     }
-    .hero .eyebrow { font-size: 10px; color: var(--accent); font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 10px; }
-    .hero h2 { font-size: 26px; font-weight: 800; line-height: 1.25; letter-spacing: -0.04em; margin: 0 0 10px; color: var(--text); max-width: 660px; }
-    .hero p { font-size: 13px; color: var(--muted); line-height: 1.6; margin: 0 0 18px; max-width: 680px; }
+    .hero .eyebrow { font-size: 9px; color: var(--accent); font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 6px; }
+    .hero h2 { font-size: 17px; font-weight: 800; line-height: 1.3; letter-spacing: -0.03em; margin: 0 0 6px; color: var(--text); }
+    .hero p { font-size: 12px; color: var(--muted); line-height: 1.55; margin: 0 0 12px; }
     .hero-actions { display: flex; gap: 8px; }
     .hero-button {
-      height: 38px; border: 0; border-radius: var(--radius-btn);
-      background: var(--primary); color: #fff; font-weight: 700; padding: 0 16px; font-size: 13px;
+      height: 34px; border: 0; border-radius: var(--radius-btn);
+      background: var(--primary); color: #fff; font-weight: 700; padding: 0 14px; font-size: 12px;
       transition: opacity 0.15s, transform 0.15s;
     }
     .hero-button:hover { opacity: 0.9; transform: translateY(-1px); }
     .hero-button.alt { background: rgba(255,255,255,0.07); border: 1px solid var(--border); }
     .hero-metric {
       background: rgba(255,255,255,0.04); border: 1px solid var(--border);
-      border-radius: 16px; padding: 20px; display: flex; flex-direction: column; justify-content: center;
+      border-radius: 12px; padding: 14px; display: flex; flex-direction: column; justify-content: center;
     }
-    .hero-metric label { font-size: 10px; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; }
-    .hero-metric .big { font-family: var(--font-mono); font-size: 52px; font-weight: 600; letter-spacing: -3px; margin: 8px 0 4px; color: var(--text); }
-    .hero-metric .line { height: 6px; background: rgba(255,255,255,0.08); border-radius: 10px; margin: 16px 0 14px; overflow: hidden; }
+    .hero-metric label { font-size: 9px; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; }
+    .hero-metric .big { font-family: var(--font-mono); font-size: 36px; font-weight: 600; letter-spacing: -2px; margin: 4px 0 2px; color: var(--text); }
+    .hero-metric .line { height: 5px; background: rgba(255,255,255,0.08); border-radius: 10px; margin: 10px 0 8px; overflow: hidden; }
     .hero-metric .line span { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--primary)); border-radius: 10px; transition: width 0.6s ease; }
-    .hero-metric .pair { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
+    .hero-metric .pair { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); }
     .hero-metric .pair b { color: var(--warning); }
 
     /* INSIGHT */
@@ -537,7 +536,33 @@
 
     /* DRAWER */
     .backdrop { position: fixed; inset: 0; z-index: 30; background: rgba(3,8,18,0.8); backdrop-filter: blur(6px); display: flex; justify-content: flex-end; }
-    .drawer { width: min(600px, 97vw); height: 100vh; overflow-y: auto; background: var(--surface); padding: 0; box-shadow: -20px 0 60px rgba(0,0,0,0.6); border-left: 1px solid var(--border); }
+    .drawer { width: min(860px, 98vw); height: 100vh; overflow-y: auto; background: var(--surface); padding: 0; box-shadow: -20px 0 60px rgba(0,0,0,0.6); border-left: 1px solid var(--border); }
+
+    /* FULL-PAGE OVERLAY (Call Audit Evidence / Analyst Cockpit) */
+    #fullPageRoot {
+      position: fixed !important;
+      top: 0 !important; left: 0 !important;
+      width: 100vw !important; height: 100vh !important;
+      z-index: 9999 !important;
+      background: var(--bg);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      margin: 0 !important;
+    }
+    #fullPageRoot.hidden { display: none !important; }
+    .fullpage-topbar {
+      position: sticky; top: 0; z-index: 2;
+      background: rgba(6,10,20,0.97); backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(59,130,246,0.15);
+      padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4); flex-shrink: 0;
+    }
+    .fullpage-topbar h2 { font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: -0.03em; margin: 0 0 3px; }
+    .fullpage-topbar p { margin: 0; color: var(--muted); font-size: 12px; }
+    .fullpage-body { padding: 20px 32px 48px; flex: 1; width: 100%; box-sizing: border-box; }
+    .evidence-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+    @media (max-width: 1100px) { .evidence-layout { grid-template-columns: 1fr; } }
     .drawer-top {
       position: sticky; top: 0; z-index: 2; padding: 18px 22px;
       background: rgba(17,24,39,0.97); backdrop-filter: blur(16px);
@@ -571,7 +596,7 @@
     .evidence small { display: block; color: var(--muted); margin-top: 4px; line-height: 1.45; font-size: 11px; }
 
     /* TRANSCRIPT */
-    .transcript { background: #050d1a; color: #c8d8f0; border-radius: 14px; padding: 16px; font-family: var(--font-mono); font-size: 12px; line-height: 1.7; white-space: pre-wrap; max-height: 520px; overflow-y: auto; border: 1px solid var(--border); }
+    .transcript { background: #050d1a; color: #c8d8f0; border-radius: 14px; padding: 16px; font-family: var(--font-mono); font-size: 12px; line-height: 1.7; white-space: pre-wrap; max-height: 680px; overflow-y: auto; border: 1px solid var(--border); }
     mark.high { background: rgba(239,68,68,0.3); color: #fca5a5; border-radius: 3px; padding: 1px 3px; }
     mark.medium { background: rgba(245,158,11,0.3); color: #fcd34d; border-radius: 3px; padding: 1px 3px; }
     mark.safe { background: rgba(34,197,94,0.25); color: #86efac; border-radius: 3px; padding: 1px 3px; }
@@ -611,32 +636,34 @@
     .transcript-focus { animation: focusFlash 1.1s ease; }
     @keyframes focusFlash { 0% { box-shadow:0 0 0 0 rgba(245,158,11,0); } 35% { box-shadow:0 0 0 4px rgba(245,158,11,0.4); } 100% { box-shadow:0 0 0 0 rgba(245,158,11,0); } }
 
-    /* ANALYST CARDS */
-    .analyst-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
-    .analyst-card {
+    /* ANALYST ROW LIST */
+    .analyst-list { display: flex; flex-direction: column; gap: 6px; }
+    .analyst-row {
+      display: grid;
+      grid-template-columns: 36px minmax(160px,1.8fr) repeat(5,minmax(72px,1fr)) minmax(140px,1.4fr) 110px;
+      align-items: center; gap: 12px;
       background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-      border: 1px solid rgba(255,255,255,0.07); border-radius: 14px;
-      padding: 16px; cursor: pointer;
-      transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+      border: 1px solid rgba(255,255,255,0.07); border-radius: 12px;
+      padding: 10px 16px; cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
     }
-    .analyst-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.4), 0 0 20px rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.3); }
-    .analyst-card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .analyst-row:hover { border-color: rgba(59,130,246,0.35); background: rgba(59,130,246,0.04); }
     .analyst-avatar {
-      width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+      width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
       background: linear-gradient(135deg, rgba(59,130,246,0.3), rgba(139,92,246,0.3));
       border: 1px solid rgba(59,130,246,0.25);
       display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 700; color: #93c5fd; font-family: var(--font-mono);
+      font-size: 11px; font-weight: 700; color: #93c5fd; font-family: var(--font-mono);
     }
-    .analyst-card-info { flex: 1; min-width: 0; }
-    .analyst-card-info b { display: block; font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .analyst-card-info span { font-size: 11px; color: var(--muted); }
-    .analyst-quality-badge { font-size: 13px; font-weight: 800; padding: 4px 9px; border-radius: 8px; border: 1px solid; font-family: var(--font-mono); flex-shrink: 0; }
-    .analyst-card-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 12px; }
-    .analyst-stat { background: rgba(255,255,255,0.03); border-radius: 8px; padding: 8px 6px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
-    .analyst-stat span { display: block; font-size: 9px; color: var(--subtle); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
-    .analyst-stat b { display: block; font-size: 14px; font-weight: 700; color: var(--text); font-family: var(--font-mono); }
-    .analyst-stat b.high { color: #ef4444; }
+    .analyst-name-cell b { display: block; font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .analyst-name-cell span { font-size: 11px; color: var(--muted); }
+    .analyst-metric { text-align: center; }
+    .analyst-metric span { display: block; font-size: 9px; color: var(--subtle); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 3px; }
+    .analyst-metric b { display: block; font-size: 13px; font-weight: 700; color: var(--text); font-family: var(--font-mono); }
+    .analyst-metric b.high { color: #ef4444; }
+    .analyst-quality-badge { font-size: 14px; font-weight: 800; padding: 4px 10px; border-radius: 8px; border: 1px solid; font-family: var(--font-mono); text-align: center; }
+    /* keep old card CSS vars referenced in badge */
+    .analyst-card-grid { display: none; }
     .analyst-card-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 
     /* ===== RESPONSIVE ===== */
@@ -787,6 +814,7 @@
           <p id="pageSubtitle">Overall health, immediate signals and evidence-linked action.</p>
         </div>
         <div class="top-actions">
+          <span id="scopeBadge" class="status-pill dark" style="font-size:10px;padding:4px 10px">All available calls</span>
           <span id="refreshStatus" class="refresh-label"></span>
           <button class="btn-secondary" onclick="refresh(false,true)">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:-2px;margin-right:4px"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
@@ -813,12 +841,6 @@
     </header>
 
     <section class="content">
-      <div class="badge-line">
-        <div class="badge-set">
-          <span class="status-pill"><span class="dot"></span>Node API Pool &middot; Evidence-Populated Layer</span>
-          <span id="scopeBadge" class="status-pill dark">All available calls</span>
-        </div>
-      </div>
       <div id="pageContent" class="loading">
         <div class="spinner"></div>
         Loading intelligence...
@@ -1084,7 +1106,9 @@ function destroyCharts() {
 /* ===== KPI HELPER ===== */
 function kpi(label, value, note, accent, action) {
   const arrowSvg = action ? '<div class="arrow"><svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M7 7h10v10" stroke-width="2"/></svg></div>' : '';
-  return '<div class="kpi ' + accent + (action ? ' clickable' : '') + '"' + (action ? ' onclick="' + action + '"' : '') + '>' +
+  // Use single-quoted onclick to avoid double-quote conflicts inside the action string
+  const onclick = action ? ' onclick=\'' + action.replace(/'/g, '&#39;') + '\'' : '';
+  return '<div class="kpi ' + accent + (action ? ' clickable' : '') + '"' + onclick + '>' +
     '<div class="label">' + esc(label) + '</div>' +
     '<div class="value">' + esc(value) + '</div>' +
     '<div class="note">' + esc(note) + '</div>' +
@@ -1171,9 +1195,9 @@ function renderJourney(d) {
   return '<div class="page-canvas">' +
     '<div class="analysis-strip">' +
       kpi('Pending Journey Actions', j.pendingCount,          'Callback, support or escalation', 'accent-amber', 'openInsight("support","Callback Required")') +
-      kpi('Journey Stages',          A(j.stages).length,      'Track customer movement',         'accent-blue',  '') +
-      kpi('Call Type Cohorts',       A(j.callTypes).length,   'Sales and support split',         'accent-green', '') +
-      kpi('Evidence Queue',          A(j.pendingCalls).length,'Latest pending examples',         'accent-teal',  '') +
+      kpi('Journey Stages',          A(j.stages).length,      'Track customer movement',         'accent-blue',  'openInsight("journey","")') +
+      kpi('Call Type Cohorts',       A(j.callTypes).length,   'Sales and support split',         'accent-green', 'openInsight("callType","")') +
+      kpi('Evidence Queue',          A(j.pendingCalls).length,'Latest pending examples',         'accent-teal',  'openInsight("support","Support Pending")') +
     '</div>' +
     '<div class="card full-analysis">' +
       '<div class="card-head"><div><h3>Customer Journey Stage Concentration</h3><div class="sub">Full-width journey graph showing where customers are spending time or getting stuck. Click a stage to open evidence.</div></div></div>' +
@@ -1195,10 +1219,10 @@ function renderQuality(d) {
   const q = O(d.quality), s = O(d.summary);
   return '<div class="page-canvas">' +
     '<div class="analysis-strip">' +
-      kpi('Overall Quality',     s.avgQuality,             'All scored calls',         'accent-green', '') +
+      kpi('Overall Quality',     s.avgQuality,             'All scored calls',         'accent-green', 'openInsight("","")') +
       kpi('Sales/Mixed Quality', s.salesMixedAvgQuality,   'Core selling cohort',      'accent-amber', 'openInsight("funnel","Sales / Mixed Opportunities")') +
       kpi('Support Quality',     s.supportAvgQuality,      'Journey assistance cohort','accent-blue',  'openInsight("qualityType","Support")') +
-      kpi('Scored Calls',        s.qualityScoredCalls,     'Auditable interactions',   'accent-teal',  '') +
+      kpi('Scored Calls',        s.qualityScoredCalls,     'Auditable interactions',   'accent-teal',  'openInsight("","")') +
     '</div>' +
     '<div class="card full-analysis">' +
       '<div class="card-head"><div><h3>Quality Cohort Comparison</h3><div class="sub">Large-format view of quality by interaction purpose. This is required while explaining the overall quality average.</div></div></div>' +
@@ -1219,7 +1243,7 @@ function renderCompliance(d) {
     '<div class="analysis-strip">' +
       kpi('High Risk Triggers',  s.highRiskTriggers,   'Validate — not confirmed breach',  'accent-red',    'openInsight("risk","High Priority Risk Trigger")') +
       kpi('Medium Flags',        s.mediumFlags,        'Transparency / sensitive wording', 'accent-amber',  'openInsight("risk","Medium Transparency / Sensitive Flag")') +
-      kpi('Confirmed Critical',  s.criticalConfirmed,  'Only confirmed evidence',          'accent-indigo', 'openInsight("risk","Confirmed Critical Violation")') +
+      kpi('Safe / Guided Calls', s.safeGuidance,        'Proper self-entry guidance',        'accent-green',  'openInsight("risk","Safe / Guided Self-Entry")') +
       kpi('Disbursal Signal',    s.disbursalSignal,    'Do not overclaim outcome',         'accent-blue',   'openInsight("funnel","Disbursal Signal")') +
     '</div>' +
     '<div class="card full-analysis">' +
@@ -1227,52 +1251,60 @@ function renderCompliance(d) {
       '<div class="chart-instruction"><strong>Control rule:</strong> high-priority trigger is not a confirmed violation unless evidence validates the breach.</div>' +
       '<div class="chart workspace" id="riskChart"></div>' +
     '</div>' +
-    '<div class="secondary-grid">' +
-      '<div class="card full-analysis large-table"><div class="card-head"><div><h3>High-Priority Trigger Queue</h3><div class="sub">Same-day validation actions.</div></div></div>' + recordsTable(A(c.highPriority)) + '</div>' +
-      '<div class="card full-analysis large-table"><div class="card-head"><div><h3>Transparency / Sensitive Guidance Queue</h3><div class="sub">Coaching flags, not assumed violations.</div></div></div>' + recordsTable(A(c.medium).slice(0, 25)) + '</div>' +
-    '</div>' +
+    '<div class="card full-analysis large-table"><div class="card-head"><div><h3>High-Priority Trigger Queue</h3><div class="sub">Same-day validation actions. These are not confirmed violations — validate transcript before any compliance action.</div></div></div>' + recordsTable(A(c.highPriority)) + '</div>' +
+    '<div class="card full-analysis large-table"><div class="card-head"><div><h3>Transparency / Sensitive Guidance Queue</h3><div class="sub">Coaching flags, not assumed violations. Address in 24-hour coaching, not disciplinary review.</div></div></div>' + recordsTable(A(c.medium).slice(0, 50)) + '</div>' +
     intelligenceSignals('compliance', s) +
   '</div>';
 }
 
 function renderAnalysts(d) {
   const analysts = A(d.analysts);
-  const cards = analysts.map(a => {
+
+  const headerRow =
+    '<div style="display:grid;grid-template-columns:36px minmax(160px,1.8fr) repeat(5,minmax(72px,1fr)) minmax(140px,1.4fr) 110px;gap:12px;padding:6px 16px;margin-bottom:4px">' +
+      '<div></div>' +
+      '<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--subtle)">Analyst</div>' +
+      '<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--subtle);text-align:center">Calls</div>' +
+      '<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--subtle);text-align:center">Avg Quality</div>' +
+      '<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--subtle);text-align:center">Sales Quality</div>' +
+      '<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--subtle);text-align:center">Pitch Rate</div>' +
+      '<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--subtle);text-align:center">High Risk</div>' +
+      '<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--subtle)">Primary Leakage</div>' +
+      '<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--subtle);text-align:center">Priority</div>' +
+    '</div>';
+
+  const rows = analysts.map(a => {
     const q = N(a.avgQuality);
     const qColor = q >= 85 ? '#22c55e' : q >= 70 ? '#f59e0b' : '#ef4444';
-    const pitchPct = N(a.pitchAttemptRate);
     const riskCls = a.highRiskTriggers > 0 ? 'high' : '';
-    return '<div class="analyst-card" onclick="openAnalyst(\'' + esc(a.agentId) + '\')">' +
-      '<div class="analyst-card-top">' +
-        '<div class="analyst-avatar">' + esc(String(a.agentId || '?').slice(0,2).toUpperCase()) + '</div>' +
-        '<div class="analyst-card-info">' +
-          '<b>' + esc(a.agentId) + '</b>' +
-          '<span>' + esc(a.calls) + ' calls</span>' +
-        '</div>' +
-        '<div class="analyst-quality-badge" style="color:' + qColor + ';border-color:' + qColor + '20;background:' + qColor + '12">' + esc(q) + '%</div>' +
-      '</div>' +
-      '<div class="analyst-card-stats">' +
-        '<div class="analyst-stat"><span>Sales Quality</span><b>' + esc(a.salesMixedAvgQuality) + '%</b></div>' +
-        '<div class="analyst-stat"><span>Pitch Rate</span><b>' + pitchPct + '%</b></div>' +
-        '<div class="analyst-stat"><span>High Risk</span><b class="' + riskCls + '">' + esc(a.highRiskTriggers) + '</b></div>' +
-      '</div>' +
-      '<div class="analyst-card-footer">' +
-        '<span class="tag ' + (a.priority === 'P1 Validate' ? 'high' : a.priority === 'P2 Coach / Validate' ? 'medium' : 'action') + '">' + esc(a.priority || 'Monitor') + '</span>' +
-        '<span style="font-size:11px;color:var(--muted)">' + esc(a.primaryLeakage || '') + '</span>' +
-      '</div>' +
+    const priTag = a.priority === 'P1 Validate' ? 'high'
+      : a.priority && a.priority.startsWith('P2') ? 'medium'
+      : a.priority && a.priority.startsWith('P3') ? 'action' : '';
+    return '<div class="analyst-row" data-name="' + esc((a.agentId||'').toLowerCase()) + '" onclick="openAnalyst(\'' + esc(a.agentId).replace(/'/g,"&#39;") + '\')">' +
+      '<div class="analyst-avatar">' + esc(String(a.agentId || '?').slice(0,2).toUpperCase()) + '</div>' +
+      '<div class="analyst-name-cell"><b>' + esc(a.agentId) + '</b><span>' + esc(a.calls) + ' calls</span></div>' +
+      '<div class="analyst-metric"><b>' + esc(a.calls) + '</b></div>' +
+      '<div class="analyst-metric"><b style="color:' + qColor + '">' + esc(q) + '%</b></div>' +
+      '<div class="analyst-metric"><b>' + esc(a.salesMixedAvgQuality) + '%</b></div>' +
+      '<div class="analyst-metric"><b>' + esc(a.pitchAttemptRate) + '%</b></div>' +
+      '<div class="analyst-metric"><b class="' + riskCls + '">' + esc(a.highRiskTriggers) + '</b></div>' +
+      '<div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(a.primaryLeakage || '—') + '</div>' +
+      '<div style="text-align:center"><span class="tag ' + priTag + '">' + esc(a.priority || 'Monitor') + '</span></div>' +
     '</div>';
   }).join('');
 
   return '<div class="page-canvas">' +
-    '<div class="card" style="padding:16px 20px">' +
-      '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px">' +
+    '<div class="card" style="padding:14px 16px">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px">' +
         '<div><h3 style="margin:0 0 3px;font-size:15px;font-weight:700">Analyst Deep Dive</h3>' +
-        '<p class="sub">Click any analyst card to open their full evidence cockpit — quality breakdown, funnel, and call-level proof.</p></div>' +
+        '<p class="sub">Click any row to open the full evidence cockpit — quality breakdown, funnel and call-level proof.</p></div>' +
         '<div style="display:flex;gap:8px;align-items:center">' +
-          '<input id="analystSearch" placeholder="Search analyst name..." style="height:36px;min-width:220px;font-size:12px" oninput="filterAnalystCards(this.value)">' +
+          '<span style="font-size:11px;color:var(--muted)">' + analysts.length + ' analysts</span>' +
+          '<input id="analystSearch" placeholder="Search analyst..." style="height:34px;min-width:200px;font-size:12px" oninput="filterAnalystRows(this.value)">' +
         '</div>' +
       '</div>' +
-      '<div id="analystCardGrid" class="analyst-card-grid">' + cards + '</div>' +
+      headerRow +
+      '<div id="analystList" class="analyst-list">' + rows + '</div>' +
     '</div>' +
   '</div>';
 }
@@ -1445,11 +1477,11 @@ function slaTable(rows) {
   '</tbody></table></div>';
 }
 
-function filterAnalystCards(query) {
-  const q = query.toLowerCase();
-  document.querySelectorAll('.analyst-card').forEach(card => {
-    const name = (card.querySelector('b') || {}).textContent || '';
-    card.style.display = name.toLowerCase().includes(q) ? '' : 'none';
+function filterAnalystCards(query) { filterAnalystRows(query); }
+function filterAnalystRows(query) {
+  const q = (query || '').toLowerCase();
+  document.querySelectorAll('.analyst-row').forEach(row => {
+    row.style.display = (row.dataset.name || '').includes(q) ? '' : 'none';
   });
 }
 
@@ -1636,6 +1668,8 @@ window.addEventListener('resize', () => {
 /* ===== DRAWER / INSIGHT ACTIONS ===== */
 function openInsight(dimension, value, title) {
   openDrawer('<div class="loading"><div class="spinner"></div>Loading evidence calls...</div>');
+  const dim = dimension || '';
+  const val = value || '';
   google.script.run
     .withSuccessHandler(res => {
       openDrawer(
@@ -1645,7 +1679,7 @@ function openInsight(dimension, value, title) {
       bindClicks();
     })
     .withFailureHandler(e => openDrawer('<div class="drawer-body"><div class="error-box">' + esc(e.message) + '</div></div>'))
-    .getCallsForInsight(state.pin, state.filters, dimension, value, 1, 60);
+    .getCallsForInsight(state.pin, state.filters, dim, val, 1, 60);
 }
 
 function loadCalls(page) {
@@ -1670,33 +1704,90 @@ function searchRecords() {
 }
 
 function openAnalyst(agent) {
-  openDrawer('<div class="loading"><div class="spinner"></div>Building analyst cockpit...</div>');
+  openFullPage(
+    '<div class="fullpage-topbar"><div><h2>Analyst Cockpit &middot; ' + esc(agent) + '</h2><p>Loading evidence cockpit...</p></div>' +
+    '<button class="close" onclick="closeFullPage()" style="flex-shrink:0">&times;</button></div>' +
+    '<div class="fullpage-body"><div class="loading"><div class="spinner"></div>Building analyst cockpit...</div></div>'
+  );
   google.script.run
     .withSuccessHandler(res => {
       const a = O(res.analyst), s = O(res.summary), p = O(res.processSummary);
+      const agentFilters = Object.assign({}, state.filters, { agent: a.agentId });
+
+      function analystKpi(label, value, note, accent, dim, val) {
+        const action = dim ? 'openAnalystInsight(\'' + esc(a.agentId).replace(/'/g,"&#39;") + '\',\'' + esc(dim) + '\',\'' + esc(val) + '\')' : '';
+        return kpi(label, value, note, accent, action);
+      }
+
+      const body =
+        '<div class="fullpage-topbar">' +
+          '<div>' +
+            '<h2>Analyst Cockpit &middot; ' + esc(a.agentId) + '</h2>' +
+            '<p>TL: <b style="color:var(--text)">' + esc(a.tlName) + '</b> &middot; Priority: <b style="color:var(--warning)">' + esc(a.priority) + '</b> &middot; Primary Leakage: ' + esc(a.primaryLeakage) + '</p>' +
+          '</div>' +
+          '<button class="close" onclick="closeFullPage()" style="flex-shrink:0">&times;</button>' +
+        '</div>' +
+        '<div class="fullpage-body">' +
+          '<div class="kpi-grid" style="margin-bottom:14px">' +
+            analystKpi('Audited Calls',     s.totalCalls,             'vs Process ' + p.totalCalls,           'accent-blue',   'callType', '') +
+            analystKpi('Avg Quality',        s.avgQuality,             'Process avg: ' + p.avgQuality,         'accent-teal',   'callType', '') +
+            analystKpi('Sales Quality',      s.salesMixedAvgQuality,   'Process: ' + p.salesMixedAvgQuality,   'accent-amber',  'funnel',   'Sales / Mixed Opportunities') +
+            analystKpi('Pitch Attempt Rate', s.pitchAttemptRate + '%', 'Process: ' + p.pitchAttemptRate + '%', 'accent-indigo', 'funnel',   'Pitch Attempted') +
+            analystKpi('Strong Pitch',       s.strongPitch,            'Defensible pitches only',              'accent-green',  'funnel',   'Strong Pitch') +
+            analystKpi('High Risk Triggers', s.highRiskTriggers,       'Validate same-day',                    'accent-red',    'risk',     'High Priority Risk Trigger') +
+            analystKpi('Disbursal Signal',   s.disbursalSignal,        'Transcript-confirmed only',            'accent-amber',  'funnel',   'Disbursal Signal') +
+            analystKpi('Opportunities',      s.opportunities,          'Sales + Mixed calls',                  'accent-blue',   'funnel',   'Sales / Mixed Opportunities') +
+          '</div>' +
+          '<div class="evidence-layout">' +
+            '<div>' +
+              '<div class="card full-analysis"><div class="card-head"><div><h3>Analyst Sales Funnel</h3><div class="sub">Individual movement across opportunity stages.</div></div></div>' +
+              '<div class="funnel">' + A(res.sales.funnel).map(x =>
+                '<div class="funnel-stage" onclick="openAnalystInsight(\'' + esc(a.agentId).replace(/'/g,"&#39;") + '\',\'funnel\',\'' + esc(x.label).replace(/'/g,"&#39;") + '\')">' +
+                '<span>' + esc(x.label) + '</span><b>' + esc(x.count) + '</b></div>'
+              ).join('') + '</div></div>' +
+              '<div class="card full-analysis"><div class="card-head"><div><h3>Quality Parameters</h3><div class="sub">Parameter-level breakdown for this analyst.</div></div></div>' +
+              '<div class="parameter-workspace">' + parameterRows(A(O(res.quality).parameters)) + '</div></div>' +
+            '</div>' +
+            '<div>' +
+              '<div class="card full-analysis large-table"><div class="card-head"><div><h3>Priority Evidence Calls</h3><div class="sub">Click any Call ID to open full audit evidence.</div></div></div>' +
+              recordsTable(A(res.calls).slice(0, 30)) + '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+
+      openFullPage(body);
+      bindClicks();
+    })
+    .withFailureHandler(e => openFullPage(
+      '<div class="fullpage-topbar"><div><h2>Analyst Cockpit</h2></div><button class="close" onclick="closeFullPage()">&times;</button></div>' +
+      '<div class="fullpage-body"><div class="error-box">' + esc(e.message) + '</div></div>'
+    ))
+    .getAnalystCockpit(state.pin, agent, state.filters);
+}
+
+function openAnalystInsight(agentName, dimension, value) {
+  const agentFilters = Object.assign({}, state.filters, { agent: agentName });
+  openDrawer('<div class="loading"><div class="spinner"></div>Loading evidence calls...</div>');
+  google.script.run
+    .withSuccessHandler(res => {
       openDrawer(
-        '<div class="drawer-top"><div><h2>Analyst Cockpit &middot; ' + esc(a.agentId) + '</h2><p>TL: ' + esc(a.tlName) + ' &middot; Primary leakage: ' + esc(a.primaryLeakage) + ' &middot; ' + esc(a.priority) + '</p></div><button class="close" onclick="closeDrawer()">&times;</button></div>' +
-        '<div class="drawer-body">' +
-          '<div class="kpi-grid">' +
-            kpi('Audited Calls',      s.totalCalls,             'Analyst population', 'accent-blue',   '') +
-            kpi('Avg Quality',         s.avgQuality,             'Process ' + p.avgQuality, 'accent-teal', '') +
-            kpi('Sales Quality',       s.salesMixedAvgQuality,   'Process ' + p.salesMixedAvgQuality, 'accent-amber', '') +
-            kpi('Pitch Attempt Rate',  s.pitchAttemptRate + '%', 'Process ' + p.pitchAttemptRate + '%', 'accent-indigo', '') +
-          '</div>' +
-          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">' +
-            '<div class="card"><div class="card-head"><div><h3>Analyst Sales Funnel</h3><div class="sub">Individual movement across opportunity stages.</div></div></div><div class="funnel">' + A(res.sales.funnel).map(x => '<div class="funnel-stage"><span>' + esc(x.label) + '</span><b>' + esc(x.count) + '</b></div>').join('') + '</div></div>' +
-            '<div class="card"><div class="card-head"><div><h3>Priority Evidence Calls</h3><div class="sub">Open call detail for highlighted evidence.</div></div></div>' + recordsTable(A(res.calls).slice(0, 15)) + '</div>' +
-          '</div>' +
-        '</div>'
+        '<div class="drawer-top"><div><h2>' + esc(res.title || 'Evidence Calls') + ' &middot; ' + esc(agentName) + '</h2>' +
+        '<p>' + esc(res.totalRows) + ' matching calls · Click any call to view audit evidence.</p></div>' +
+        '<button class="close" onclick="closeDrawer()">&times;</button></div>' +
+        '<div class="drawer-body">' + recordsTable(A(res.records)) + '</div>'
       );
       bindClicks();
     })
     .withFailureHandler(e => openDrawer('<div class="drawer-body"><div class="error-box">' + esc(e.message) + '</div></div>'))
-    .getAnalystCockpit(state.pin, agent, state.filters);
+    .getCallsForInsight(state.pin, agentFilters, dimension, value, 1, 60);
 }
 
 function openCall(id) {
-  openDrawer('<div class="loading"><div class="spinner"></div>Loading mark-down evidence trace...</div>');
+  openFullPage(
+    '<div class="fullpage-topbar"><div><h2>Call Audit Evidence</h2><p>Loading evidence trace for call ' + esc(id) + '...</p></div>' +
+    '<button class="close" onclick="closeFullPage()" style="flex-shrink:0">&times;</button></div>' +
+    '<div class="fullpage-body"><div class="loading"><div class="spinner"></div>Loading mark-down evidence trace...</div></div>'
+  );
   google.script.run
     .withSuccessHandler(res => {
       const r = O(res.record), traces = A(r.parameterEvidence), legacy = A(r.evidenceHighlights), exact = A(r.highlightRanges);
@@ -1704,8 +1795,8 @@ function openCall(id) {
       const exactEngine = exact.length > 0;
       const engineText = exactEngine ? (r.evidenceEngineVersion || 'Exact Range Evidence') : 'Compatibility Phrase Fallback';
       const engineBadge = '<span class="engine-pill ' + (exactEngine ? '' : 'fallback') + '">' + esc(engineText) + '</span>';
-      const fallbackWarning = exactEngine ? '' : '<div class="fallback-warning"><b>Evidence engine warning:</b> This call response does not contain exact transcript ranges. The page is using phrase fallback so a highlight can still appear. Replace and redeploy the latest <b>Code.gs</b> to enable exact mark-down highlighting.</div>';
-      const zeroHighlightInfo = ranges.length ? '' : '<div class="no-highlight-info"><b>No highlighted sentence is available.</b> This normally means the mark was lost because a required behaviour was not evidenced in the transcript.</div>';
+      const fallbackWarning = exactEngine ? '' : '<div class="fallback-warning"><b>Evidence engine warning:</b> Phrase fallback active — exact ranges not available in this record.</div>';
+      const zeroHighlightInfo = ranges.length ? '' : '<div class="no-highlight-info"><b>No highlighted sentence available.</b> The mark was lost because a required behaviour was not evidenced in the transcript.</div>';
       const traceHtml = traces.length ? '<div class="trace-table">' + traces.map(t => {
         const canJump = (t.highlightStart !== null && t.highlightStart !== undefined);
         const jump = canJump ? ' onclick="jumpEvidenceAt(' + N(t.highlightStart) + ')"' : '';
@@ -1719,9 +1810,15 @@ function openCall(id) {
       }).join('') + '</div>' : empty('No parameter-wise mark-down evidence was returned for this record.');
 
       const body =
-        '<div class="drawer-top"><div><h2>Call Audit Evidence &middot; ' + esc(r.id) + engineBadge + '</h2><p>' + esc(r.date) + ' &middot; Analyst ' + esc(r.analyst) + ' &middot; ' + esc(r.mobile) + '</p></div><button class="close" onclick="closeDrawer()">&times;</button></div>' +
-        '<div class="drawer-body">' +
-          '<div class="stat-grid">' +
+        '<div class="fullpage-topbar">' +
+          '<div>' +
+            '<h2>Call Audit Evidence &middot; ' + esc(r.id) + engineBadge + '</h2>' +
+            '<p>' + esc(r.date) + ' &middot; Analyst: <b style="color:var(--text)">' + esc(r.analyst) + '</b> &middot; ' + esc(r.mobile) + ' &middot; ' + esc(r.callType) + ' &middot; Quality: <b style="color:var(--accent)">' + esc(r.qualityScore) + '</b></p>' +
+          '</div>' +
+          '<button class="close" onclick="closeFullPage()" style="flex-shrink:0">&times;</button>' +
+        '</div>' +
+        '<div class="fullpage-body">' +
+          '<div class="stat-grid" style="grid-template-columns:repeat(8,1fr)">' +
             stat('Call Type', r.callType) + stat('Journey Stage', r.journeyStage) +
             stat('Quality Score', r.qualityScore) + stat('Pitch Strength', r.pitchStrength) +
             stat('Risk Bucket', r.riskBucket) + stat('Action Priority', r.actionPriority) +
@@ -1729,31 +1826,41 @@ function openCall(id) {
           '</div>' +
           fallbackWarning +
           '<div class="trace-note"><b>Evidence rule:</b><span>' + esc(r.highlightInstruction || 'Only exact decision-driving wording should be highlighted.') + '</span></div>' +
-          '<div class="detail-grid">' +
+          '<div class="evidence-layout">' +
             '<div>' +
               '<div class="panel"><h3>Why This Call Was Marked</h3><p>' + esc(r.classificationReason) + '</p></div>' +
               '<div class="panel"><h3>Marks Lost &amp; Evidence Trace</h3>' + traceHtml + '</div>' +
-              '<div class="panel"><h3>Audit Recommendation</h3><p><b>Insight:</b> ' + esc(r.auditInsight) + '</p><p><b>Action:</b> ' + esc(r.actionRecommendation) + '</p><p><b>Parameter Score:</b> ' + esc(r.qualityBreakup) + '</p></div>' +
+              '<div class="panel"><h3>Audit Recommendation</h3>' +
+                '<p><b>Insight:</b> ' + esc(r.auditInsight) + '</p>' +
+                '<p><b>Action:</b> ' + esc(r.actionRecommendation) + '</p>' +
+                '<p><b>Parameter Scores:</b> ' + esc(r.qualityBreakup) + '</p>' +
+              '</div>' +
             '</div>' +
             '<div>' +
-              '<div class="panel"><h3>Transcript &middot; Exact Evidence Highlight</h3>' +
+              '<div class="panel" style="position:sticky;top:76px">' +
+                '<h3>Transcript &middot; Exact Evidence Highlight</h3>' +
                 '<div class="legend"><span><i class="r"></i>High trigger</span><span><i class="a"></i>Mark-down concern</span><span><i class="g"></i>Safe/context</span><span><i class="b"></i>Supporting evidence</span></div>' +
                 zeroHighlightInfo +
-                '<div class="transcript" id="detailTranscript">' + renderRanges(r.transcript, ranges) + '</div>' +
+                '<div class="transcript" id="detailTranscript" style="max-height:calc(100vh - 220px)">' + renderRanges(r.transcript, ranges) + '</div>' +
               '</div>' +
             '</div>' +
           '</div>' +
         '</div>';
 
-      openDrawer(body);
+      openFullPage(body);
+      bindClicks();
     })
-    .withFailureHandler(e => openDrawer('<div class="drawer-body"><div class="error-box">' + esc(e.message) + '</div></div>'))
+    .withFailureHandler(e => openFullPage(
+      '<div class="fullpage-topbar"><div><h2>Call Audit Evidence</h2></div><button class="close" onclick="closeFullPage()">&times;</button></div>' +
+      '<div class="fullpage-body"><div class="error-box">' + esc(e.message) + '</div></div>'
+    ))
     .getCallDetail(state.pin, id, state.filters.clientId);
 }
 
 /* ===== EVIDENCE HELPERS ===== */
 function resolveEvidenceRanges(text, exactRanges, legacyHighlights) {
   const raw = String(text || '');
+  if(!raw || /^none$/i.test(raw.trim())) return [];
   const validExact = A(exactRanges).filter(r => r && Number.isFinite(Number(r.start)) && Number.isFinite(Number(r.end)) && Number(r.end) > Number(r.start));
   if(validExact.length) return validExact;
   const resolved = [], used = [];
@@ -1771,7 +1878,9 @@ function resolveEvidenceRanges(text, exactRanges, legacyHighlights) {
 }
 
 function renderRanges(text, ranges) {
-  const raw = String(text || ''), ordered = A(ranges).slice().sort((a, b) => N(a.start) - N(b.start));
+  const raw = String(text || '');
+  if(!raw || /^none$/i.test(raw.trim())) return '<span style="color:var(--subtle);font-size:11px">No transcript available for this call.</span>';
+  const ordered = A(ranges).slice().sort((a, b) => N(a.start) - N(b.start));
   let html = '', cursor = 0;
   ordered.forEach(r => {
     const start = Math.max(cursor, N(r.start)), end = Math.min(raw.length, Math.max(start, N(r.end)));
@@ -1820,6 +1929,25 @@ function closeDrawer() {
   root.innerHTML = '';
 }
 document.addEventListener('click', e => { if(e.target.id === 'drawerRoot') closeDrawer(); });
+
+/* ===== FULL-PAGE OVERLAY ===== */
+function openFullPage(content) {
+  let root = document.getElementById('fullPageRoot');
+  if (!root) {
+    root = document.createElement('div');
+    root.id = 'fullPageRoot';
+  }
+  // Always re-append as last child of body so no stacking context parent clips it
+  document.body.appendChild(root);
+  root.className = '';
+  root.innerHTML = content;
+  document.body.style.overflow = 'hidden';
+}
+function closeFullPage() {
+  const root = document.getElementById('fullPageRoot');
+  if (root) { root.className = 'hidden'; root.innerHTML = ''; }
+  document.body.style.overflow = '';
+}
 
 /* ===== TRENDS TAB ===== */
 let trendsData = null;
